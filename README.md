@@ -1,63 +1,47 @@
 # Order & Payment System (Backend Service)
 
 ## 1. Problem Statement
-Build a backend service to manage an **Order & Payment System**.
+ *This project is an Order–Payment service focused on managing the complete lifecycle of orders and payments. It robustly handles order state transitions, ensures data consistency during failure scenarios, and enforces business validations to prevent invalid data from entering the system.*
 
-This service should allow users to:
-- Create new orders
-- Cancel orders
-- Make payments
-
-The system should handle:
-- Rollback if an order fails
-- Rollback if a payment fails
-- Avoid duplicate orders
-- Handle system failures gracefully
-
----
 
 ## 2. In Scope
 - **Order Management**
-- **Product Management** (related to order: quantity, name, description)
 - **Payment Management**
 
 Scope includes **API design, implementation, and documentation only** (no UI).
 
 Functional scope:
-1. Create an order for a user
-2. Retry an order if it is in `ORDER_FAILED` state
-3. Cancel an order for a user
+1. Create an order
+2. Modify an order
+3. Cancel an order
 4. Allow payment for an order
 5. Retry payment if order state is `PAYMENT_FAILED`
-6. Allow users to modify an order if the order is in payment state
-7. Local deployment and Docker deployment
+6. Local deployment and Docker deployment
 
 ---
 
 ## 3. Out of Scope
 - Notifications
 - Cart management
-- Actual integration with payment gateway
-- Cloud deployment
+- Integration with external payment gateway
 - Shipping management
+- Cloud Integration and deployment
 - Admin user modifying orders on behalf of users
 
 ---
 
 ## 4. Order Lifecycle States
-An order can be in one of the following states:
+An order can exist in one of the following states:
 
-- **CREATED** – Initial state when an order is created
-- **ORDER_FAILED** – Order failed (e.g., product unavailable)
-- **PAYMENT_IN_PROGRESS** – Payment initiated
-- **PAYMENT_DONE** – Payment successful
-- **PAYMENT_FAILED** – Payment failed
-- **ORDER_CANCELLED** – Order cancelled by user
+- **CREATED** – Order successfully created
+- **PAYMENT_IN_PROGRESS** – Payment has been initiated
+- **PAYMENT_DONE** – Payment completed successfully
+- **PAYMENT_FAILED** – Payment attempt failed
+- **ORDER_CANCELLED** – Order cancelled by the user
 
 ---
 
 ## 5. State Transition Rules
-- `ORDER_FAILED → CREATED` (retry order)
 - `CREATED → PAYMENT_IN_PROGRESS → PAYMENT_DONE`
 - `CREATED → PAYMENT_IN_PROGRESS → PAYMENT_FAILED`
 - `CREATED → ORDER_CANCELLED`
@@ -65,32 +49,33 @@ An order can be in one of the following states:
 ---
 
 ## 6. Failure Handling Rules
-- **Payment failure**: rollback all changes, unblock reserved products, mark order as `PAYMENT_FAILED`
-- **Duplicate orders**: prevent multiple identical orders for the same products
-- **Payment retry**: prevent duplicate payments if user retries or refreshes during payment
-- **Delayed acknowledgement**: if payment succeeds but system doesn’t acknowledge within 3 minutes, handle gracefully
+- **Payment failure**: 	On payment failure, the order state is updated to PAYMENT_FAILED to maintain consistency.
+- **Duplicate orders**: The system prevents the creation of multiple orders for the same request.
+- **Payment retry**: Duplicate payments are prevented when users retry or refresh during the payment process.
 
 ---
 
 ## 7. API List (Names Only)
-- `POST /order` – Create order  
-- `GET /order/{id}` – Get order details  
-- `PUT /order/{id}` – Modify order  
-- `POST /order/cancelorder/{id}` – Cancel order  
-- `POST /payment` – Process payment for an order  
-- `POST /retrypayment` – Retry payment for an order  
-- `GET /payment/{paymentId}` – Get payment details  
+- `POST/orders` – Create an order  
+- `GET/orders/{id}` – Retrieve order details
+- `PUT/orders/{id}` - Modify order details
+- `POST/orders/{id}/cancel` – Cancels an order  
+- `POST/payments` – Process payment for an order  
+- `POST/payments/{id}/retry` – Retry payment for an order  
+- `GET/payments/{paymentId}` – Retrieve payment details  
 
 > No API versioning or advanced filtering in this phase.
 
 ---
 
 ## 8. Key Design Decisions
-- Monolithic design for Phase 1 (Order + Payment in one service)
-- Future enhancement: split into microservices with inter‑service communication
+*For the current scope and to keep the implementation simple, the project starts with a monolithic architecture to establish a strong and maintainable foundation. As requirements evolve and the scope expands, the design allows a gradual transition toward a more modular or single-service–oriented architecture, enabling scalability and future enhancements without major rework.*
 
 ---
 
 ## 9. Non‑Goals
 - High availability
 - Horizontal scaling
+- Distributed transactions
+- Event-driven architecture
+- External integrations
