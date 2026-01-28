@@ -2,9 +2,9 @@ package org.orderpaymentsystem.common.enums;
 
 public enum OrderStatus {
 
-	ORDER_CREATED,
+	CREATED,
 	PAYMENT_IN_PROGRESS,
 	PAYMENT_DONE,
 	PAYMENT_FAILED,
-	ORDER_REJECTED
+	ORDER_CANCELLED
 }
