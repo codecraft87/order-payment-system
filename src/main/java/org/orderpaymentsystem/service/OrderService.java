@@ -1,72 +1,70 @@
 package org.orderpaymentsystem.service;
 
 import java.util.Date;
-import java.util.Optional;
 
 import org.orderpaymentsystem.common.enums.OrderStatus;
 import org.orderpaymentsystem.dto.OrderDTO;
 import org.orderpaymentsystem.entity.Order;
+import org.orderpaymentsystem.exceptions.OrderAlreadyCancelledException;
+import org.orderpaymentsystem.exceptions.OrderCanNotBeModify;
+import org.orderpaymentsystem.exceptions.OrderNotFoundException;
 import org.orderpaymentsystem.repository.OrderRepository;
+import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
+
+@Service
 public class OrderService {
 
-	OrderRepository repo;
+	private final OrderRepository repo;
 	
-	public Optional<Long> createOrder(OrderDTO dto) {
+	public OrderService(OrderRepository repo) {
+		this.repo = repo;
+	}
+	
+	@Transactional
+	public Long createOrder(OrderDTO dto) {
 		Order order = new Order(dto);
-		order.setStatus(OrderStatus.CREATED);
 		Date now = new Date();
+		order.setStatus(OrderStatus.CREATED);
 		order.setCreatedAt(now);
 		order.setUpdatedAt(now);
-		Order createdOrder = repo.save(order);
-		Long orderId = null;
-		if(createdOrder!=null) {
-			orderId = createdOrder.getId()
-		}
-		return Optional.of(orderId);
-		
+		return repo.save(order).getId();
 	}
 	
-	
-	public Optional<OrderDTO> getOrderDetails(Long orderId) {
-		Optional<Order> orderOptional = repo.findById(orderId);
-		Order orderDetails = null;
-		OrderDTO orderDTO = null;
-		if(!orderOptional.isEmpty()) {
-			orderDetails = orderOptional.get();
-			orderDTO = new OrderDTO(orderDetails);
-		}
-		
-		return Optional.of(orderDTO);
+	public OrderDTO getOrderDetails(Long orderId) {
+		Order orderDetails = repo.findById(orderId)
+				.orElseThrow(() -> new OrderNotFoundException(orderId));
+		return new OrderDTO(orderDetails);
 	}
 	
-	public String cancelOrder(Long orderId){
-		Optional<Order> orderOptional = repo.findById(orderId);
-		String errMsg = null;
-		if(orderOptional.isEmpty()) {
-			errMsg = "Unable to find order to cancel";
-		}else {
-			Order order = orderOptional.get();
-			order.setStatus(OrderStatus.ORDER_CANCELLED);
-			Order cancelledOrder = repo.save(order);
-			if(cancelledOrder==null) {
-				errMsg = "Failed to cancel order";
+	@Transactional
+	public OrderDTO cancelOrder(Long orderId){
+		Order orderToCancel = repo.findById(orderId)
+				.orElseThrow(() -> new OrderNotFoundException(orderId));
+		if(orderToCancel.getStatus() == OrderStatus.ORDER_CANCELLED) {
+			 throw new OrderAlreadyCancelledException(orderId);
+		}
+		orderToCancel.setStatus(OrderStatus.ORDER_CANCELLED);
+		orderToCancel.setUpdatedAt(new Date());
+		Order cancelledOrder = repo.save(orderToCancel);
+		return new OrderDTO(cancelledOrder);
+	}
+	
+	@Transactional
+	public OrderDTO updateOrder(OrderDTO orderDto) {
+		Order orderToupdate= repo.findById(orderDto.getOrderId())
+				.orElseThrow(() -> new OrderNotFoundException(orderDto.getOrderId()));
+		if(orderToupdate.getStatus() == OrderStatus.PAYMENT_DONE || 
+			orderToupdate.getStatus() == OrderStatus.PAYMENT_FAILED || 
+					orderToupdate.getStatus() == OrderStatus.PAYMENT_IN_PROGRESS){
+			 	throw new OrderCanNotBeModify(orderDto.getOrderId());
 			}
-		}
-			
-		return errMsg;
-	}
-	
-	public String updateOrder(OrderDTO orderDto) {
-		Optional<Order> orderOptional = repo.findById(orderDto.getOrderId());
-		String errMsg = null;
-		if(orderOptional.isEmpty()) {
-			errMsg = "Unable to find order to update";
-		}else {
-			Order order = orderOptional.get();
-			order.set(orderDto);
-		}
-		return errMsg;
+		orderToupdate.setUpdatedAt(new Date());
+		orderToupdate.setAmount(orderDto.getAmount());
+		orderToupdate.setUserId(orderDto.getUserId());
+		Order updated = repo.save(orderToupdate);
+		return new OrderDTO(updated);
 	}
 }
 
