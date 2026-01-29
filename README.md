@@ -33,8 +33,15 @@ Functional scope:
 ```mermaid
 flowchart LR
     Client --> Controller
-    Controller --> Service
-    Service --> Repository
+
+    subgraph Service["Service Layer"]
+        direction TB
+        OrderService --> PaymentService
+    end
+
+    Controller --> OrderService
+    PaymentService --> Repository
+
 ```
 
 ## 4. Order Lifecycle States
