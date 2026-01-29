@@ -35,14 +35,13 @@ flowchart LR
     Client --> Controller
 
     subgraph Service["Service Layer"]
-        direction TB
-        OrderService --> PaymentService
+        ServiceFacade
+        OrderService
+        PaymentService
     end
 
-    Controller --> OrderService
-	 Controller --> PaymentService
-    PaymentService --> Repository
-	OrderService --> Repository
+    Controller --> ServiceFacade
+
 ```
 
 ## 4. Order Lifecycle States
