@@ -36,11 +36,12 @@ flowchart LR
 
     subgraph Service["Service Layer"]
         direction TB
-        OrderService
-        PaymentService
+        OrderService --> PaymentService
     end
 
     Controller --> OrderService
+	 Controller --> PaymentService
+    PaymentService --> Repository
 
 ```
 
