@@ -98,7 +98,6 @@ flowchart LR
 		CREATED --> ORDER_CANCELLED
 		PAYMENT_FAILED --> ORDER_CANCELLED
 		PAYMENT_DONE --> ORDER_CANCELLED
-    end
 
 ```
 - **CREATED** – Order successfully created
