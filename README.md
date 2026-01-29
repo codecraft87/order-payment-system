@@ -34,27 +34,27 @@ Functional scope:
 flowchart LR
 	
 	subgraph Controller["REST Controller"]
-		RESTController
+		Controller
 		OrderController
 		PaymentController
 	end
 
     subgraph Service["Service Layer"]
-        ServiceLayer
+        Service
         OrderService
         PaymentService
     end
 	
 	subgraph Data Access["Data Access Layer"]
-		DataAccessLayer
+		DataAccess
 		OrderRepository
 		PaymentRepository
 	end
 
-    HTTPClient -->RESTController
-	RESTController --> ServiceLayer
-	ServiceLayer --> DataAccessLayer
-	DataAccessLayer --> Database
+    HTTPClient -->Controller
+	Controller --> Service
+	Service --> DataAccess
+	DataAccess --> Database
 
 ```
 
