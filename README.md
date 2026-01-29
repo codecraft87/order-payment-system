@@ -66,10 +66,41 @@ flowchart LR
     end
 
 ```
+ *  Order module is responsible for 
+ 	-	Creating new order for user
+ 	-	Allow user to cancel an order
+ 	-	Allow user to modify an order if payment is not initated
+ 	- 	Retrive order details
+ *  Payment module is responsible for 
+ 	-	Process payment for an order
+ 	-	Retry payment if payment is failed eariler
+ 	-	Retrive payment details
+ * Interaction between Payment and Order module
+ 	Payment module interacts with order module 
+ 	-	In case of Payment is successful, payment module is responsible to update order status for payment success so that both are in sync.
+ 	-	In case of Payment is failed, payment module is responsible to update order status for payment failure so that both are in sync.
+ 	- 	Business validation needs to interact with oder module to do validation.
+ 	- 	All communication between module is synchronus and happen in single transaction.
+ * Data management model
+ 	- Single database architecture.
+ 	- All modules shares a single database.
+ * As this architecture is single database and monolith, it helps 
+ 	- consistenency in data especially maintaining status lifecycle for orders and payments. 
+ 	- automatic updates across order & payment.
 
 ## 5. Order Lifecycle States
 An order can exist in one of the following states:
+```mermaid
+flowchart LR
+		CREATED --> PAYMENT_IN_PROGRESS
+		PAYMENT_IN_PROGRESS --> PAYMENT_DONE
+		PAYMENT_IN_PROGRESS -->  PAYMENT_FAILED
+		CREATED --> ORDER_CANCELLED
+		PAYMENT_FAILED --> ORDER_CANCELLED
+		PAYMENT_DONE --> ORDER_CANCELLED
+    end
 
+```
 - **CREATED** – Order successfully created
 - **PAYMENT_IN_PROGRESS** – Payment has been initiated
 - **PAYMENT_DONE** – Payment completed successfully
