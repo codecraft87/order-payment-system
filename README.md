@@ -29,6 +29,11 @@ Functional scope:
 - Admin user modifying orders on behalf of users
 
 ---
+## architecture
+flowchart LR
+    Client --> Controller
+    Controller --> Service
+    Service --> Repository
 
 ## 4. Order Lifecycle States
 An order can exist in one of the following states:
