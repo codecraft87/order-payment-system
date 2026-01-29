@@ -6,7 +6,7 @@ import org.orderpaymentsystem.common.enums.OrderStatus;
 import org.orderpaymentsystem.dto.OrderDTO;
 import org.orderpaymentsystem.entity.Order;
 import org.orderpaymentsystem.exceptions.OrderAlreadyCancelledException;
-import org.orderpaymentsystem.exceptions.OrderCanNotBeModify;
+import org.orderpaymentsystem.exceptions.OrderCannotBeModifiedException;
 import org.orderpaymentsystem.exceptions.OrderNotFoundException;
 import org.orderpaymentsystem.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -58,7 +58,7 @@ public class OrderService {
 		if(orderToupdate.getStatus() == OrderStatus.PAYMENT_DONE || 
 			orderToupdate.getStatus() == OrderStatus.PAYMENT_FAILED || 
 					orderToupdate.getStatus() == OrderStatus.PAYMENT_IN_PROGRESS){
-			 	throw new OrderCanNotBeModify(orderDto.getOrderId());
+			 	throw new OrderCannotBeModifiedException(orderDto.getOrderId());
 			}
 		orderToupdate.setUpdatedAt(new Date());
 		orderToupdate.setAmount(orderDto.getAmount());
