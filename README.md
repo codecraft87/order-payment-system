@@ -32,15 +32,29 @@ Functional scope:
 
 ```mermaid
 flowchart LR
-    Client --> Controller
+	
+	subgraph Controller["REST Controller"]
+		REST Controller
+		Order Controller
+		Payment Controller
+	end
 
     subgraph Service["Service Layer"]
-        ServiceFacade
-        OrderService
-        PaymentService
+        Service Layer
+        Order Service
+        Payment Service
     end
+	
+	subgraph Data Access["Data Access Layer"]
+		Data Access Layer
+		Order Repository
+		Payment Repository
+	end
 
-    Controller --> ServiceFacade
+    HTTP Client -->REST Controller
+	REST Controller --> Service Layer
+	Service Layer --> Data Access Layer
+	Data Access Layer --> Database
 
 ```
 
