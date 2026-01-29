@@ -42,7 +42,7 @@ flowchart LR
     Controller --> OrderService
 	 Controller --> PaymentService
     PaymentService --> Repository
-
+	OrderService --> Repository
 ```
 
 ## 4. Order Lifecycle States
