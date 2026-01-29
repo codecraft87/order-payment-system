@@ -32,37 +32,42 @@ Functional scope:
 - Cloud Integration and deployment
 - Admin user modifying orders on behalf of users
 
-## architecture
+## 4. High-Level Architecture
 
 ```mermaid
 flowchart LR
-	
-	subgraph Controller["REST Controller"]
-		ControllerLayer
-		OrderController
-		PaymentController
-	end
+    HTTPClient --> OrderController
+    HTTPClient --> PaymentController
 
-    subgraph Service["Service Layer"]
-        ServiceLayer
-        OrderService
-        PaymentService
+    OrderController --> OrderService
+    PaymentController --> PaymentService
+
+    OrderService --> OrderRepository
+    PaymentService --> PaymentRepository
+
+    OrderRepository --> Database
+    PaymentRepository --> Database
+
+    subgraph Monolithic["Monolithic"]
+        subgraph Controller["REST Controller"]
+            OrderController
+            PaymentController
+        end
+
+        subgraph Service["Service Layer"]
+            OrderService
+            PaymentService
+        end
+
+        subgraph DataAccess["Data Access Layer"]
+            OrderRepository
+            PaymentRepository
+        end
     end
-	
-	subgraph Data Access["Data Access Layer"]
-		DataAccessLayer
-		OrderRepository
-		PaymentRepository
-	end
-
-    HTTPClient -->ControllerLayer
-	ControllerLayer --> ServiceLayer
-	ServiceLayer --> DataAccessLayer
-	DataAccessLayer --> Database
 
 ```
 
-## 4. Order Lifecycle States
+## 5. Order Lifecycle States
 An order can exist in one of the following states:
 
 - **CREATED** – Order successfully created
@@ -73,21 +78,21 @@ An order can exist in one of the following states:
 
 ---
 
-## 5. State Transition Rules
+## 6. State Transition Rules
 - `CREATED → PAYMENT_IN_PROGRESS → PAYMENT_DONE`
 - `CREATED → PAYMENT_IN_PROGRESS → PAYMENT_FAILED`
 - `CREATED → ORDER_CANCELLED`
 
 ---
 
-## 6. Failure Handling Rules
+## 7. Failure Handling Rules
 - **Payment failure**: 	On payment failure, the order state is updated to PAYMENT_FAILED to maintain consistency.
 - **Duplicate orders**: The system prevents the creation of multiple orders for the same request.
 - **Payment retry**: Duplicate payments are prevented when users retry or refresh during the payment process.
 
 ---
 
-## 7. API List (Names Only)
+## 8. API List (Names Only)
 - `POST/orders` – Create an order  
 - `GET/orders/{id}` – Retrieve order details
 - `PUT/orders/{id}` - Modify order details
@@ -100,12 +105,12 @@ An order can exist in one of the following states:
 
 ---
 
-## 8. Key Design Decisions
+## 9. Key Design Decisions
 *For the current scope and to keep the implementation simple, the project starts with a monolithic architecture to establish a strong and maintainable foundation. As requirements evolve and the scope expands, the design allows a gradual transition toward a more modular or single-service–oriented architecture, enabling scalability and future enhancements without major rework.*
 
 ---
 
-## 9. Non‑Goals
+## 10. Non‑Goals
 - High availability
 - Horizontal scaling
 - Distributed transactions
