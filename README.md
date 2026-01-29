@@ -1,8 +1,12 @@
 # Order & Payment System (Backend Service)
 
 ## 1. Problem Statement
- *This project is an Order–Payment service focused on managing the complete lifecycle of orders and payments. It robustly handles order state transitions, ensures data consistency during failure scenarios, and enforces business validations to prevent invalid data from entering the system.*
-
+*This project represents an Order–Payment service designed to manage the business lifecycle of customer orders and their associated payments in a controlled and consistent manner.
+The system allows users to create, update, cancel, and view orders, while enforcing clear business rules that govern when an order can be modified.
+The Payment service handles payment processing for orders, supports controlled retries for failed transactions, and ensures that duplicate payments are prevented.
+Order and payment states are kept in sync to ensure the system never enters an inconsistent or ambiguous state.
+All operations are validated against the current business status of the order and payment, and any action that violates defined business rules is explicitly rejected.
+Overall, the service focuses on maintaining reliable order and payment lifecycles, safeguarding data consistency, and enforcing business correctness across all operations.*
 
 ## 2. In Scope
 - **Order Management**
