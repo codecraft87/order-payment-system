@@ -30,7 +30,6 @@ public class Payment {
 
 	private void set(PaymentDTO dto) {
 		this.orderId = dto.getOrderId();
-		this.status = dto.getStatus();
 	}
 
 	@Id

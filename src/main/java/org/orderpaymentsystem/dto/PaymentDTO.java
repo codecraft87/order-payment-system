@@ -21,7 +21,9 @@ public class PaymentDTO {
 	private void set(Payment payment) {
 		this.paymentId = payment.getId();
 		this.orderId = payment.getOrderId();
-		
+		this.createdAt = payment.getCreatedAt();
+		this.updatedAt = payment.getUpdatedAt();
+		this.status = payment.getStatus();
 	}
 	private Long paymentId;
 	
@@ -32,4 +34,6 @@ public class PaymentDTO {
 	private Date createdAt;
 	
 	private Date updatedAt;
+	
+	private boolean simulateFailure;
 }
