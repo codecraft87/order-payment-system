@@ -28,12 +28,14 @@ Functional scope:
 - Cloud Integration and deployment
 - Admin user modifying orders on behalf of users
 
----
 ## architecture
+
+```mermaid
 flowchart LR
     Client --> Controller
     Controller --> Service
     Service --> Repository
+```
 
 ## 4. Order Lifecycle States
 An order can exist in one of the following states:
