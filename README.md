@@ -123,9 +123,8 @@ An order can exist in one of the following states:
 
 ```mermaid
 flowchart LR
-    CREATED --> PAYMENT_IN_PROGRESS
-    PAYMENT_IN_PROGRESS --> PAYMENT_DONE
-    PAYMENT_IN_PROGRESS --> PAYMENT_FAILED
+    CREATED --> PAYMENT_DONE
+    CREATED --> PAYMENT_FAILED
     PAYMENT_FAILED --> PAYMENT_DONE
     CREATED --> ORDER_CANCELLED
     PAYMENT_FAILED --> ORDER_CANCELLED
@@ -134,7 +133,6 @@ flowchart LR
 ### Order States
 
 * **CREATED** – Order successfully created
-* **PAYMENT_IN_PROGRESS** – Payment has been initiated
 * **PAYMENT_DONE** – Payment completed successfully
 * **PAYMENT_FAILED** – Payment attempt failed
 * **ORDER_CANCELLED** – Order cancelled by the user
@@ -142,11 +140,10 @@ flowchart LR
 ### Order Modification Rules
 
 * An order **cannot be modified** once payment has been initiated
-  (`PAYMENT_IN_PROGRESS`, `PAYMENT_DONE`, `PAYMENT_FAILED`)
+  (`PAYMENT_DONE`, `PAYMENT_FAILED`)
 * A cancelled order **cannot be modified**
-* An order **cannot be cancelled** once payment is successful or in progress
+* An order **cannot be cancelled** once payment is successful.
 * Duplicate cancellation requests are rejected
-* An order may be cancelled **only if payment has not been initiated**
 
 ---
 
@@ -190,6 +187,9 @@ flowchart LR
     subgraph "Order Cancel"
         subgraph "Order Module"
             O_CREATED[CREATED] --> O_CANCELLED[ORDER_CANCELLED]
+        end
+        subgraph "Payment Module"
+            P_FAILED[PAYMENT_FAILED] --> O_CANCELLED[ORDER_CANCELLED]
         end
     end
 
@@ -238,7 +238,7 @@ flowchart LR
   * The corresponding order is also marked as `PAYMENT_FAILED`
   * Both updates occur within a single transaction
 
-  This ensures the order never remains stuck in `CREATED` or `PAYMENT_IN_PROGRESS` and clearly communicates that payment retry is required.
+  This ensures the order never remains stuck in `CREATED` and clearly communicates that payment retry is required.
 
 * **Duplicate orders**
   The system prevents the creation of multiple orders for the same request.

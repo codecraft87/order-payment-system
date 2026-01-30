@@ -45,6 +45,9 @@ public class OrderService {
 		if(orderToCancel.getStatus() == OrderStatus.ORDER_CANCELLED) {
 			 throw new OrderAlreadyCancelledException(orderId);
 		}
+		if (orderToCancel.getStatus() == OrderStatus.PAYMENT_DONE) {
+		    throw new OrderCannotBeModifiedException(orderId);
+		}
 		orderToCancel.setStatus(OrderStatus.ORDER_CANCELLED);
 		orderToCancel.setUpdatedAt(new Date());
 		Order cancelledOrder = repo.save(orderToCancel);
@@ -56,8 +59,7 @@ public class OrderService {
 		Order orderToupdate= repo.findById(orderDto.getOrderId())
 				.orElseThrow(() -> new OrderNotFoundException(orderDto.getOrderId()));
 		if(orderToupdate.getStatus() == OrderStatus.PAYMENT_DONE || 
-			orderToupdate.getStatus() == OrderStatus.PAYMENT_FAILED || 
-					orderToupdate.getStatus() == OrderStatus.PAYMENT_IN_PROGRESS){
+			orderToupdate.getStatus() == OrderStatus.PAYMENT_FAILED){
 			 	throw new OrderCannotBeModifiedException(orderDto.getOrderId());
 			}
 		orderToupdate.setUpdatedAt(new Date());
