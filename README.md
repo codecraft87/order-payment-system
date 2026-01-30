@@ -172,52 +172,56 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    CREATED --> PAYMENT_DONE
-
-    subgraph "Order Success"
-        subgraph "Order Status"
-            CREATED
-            PAYMENT_DONE
+    subgraph "Successful Payment"
+        subgraph "Order Module"
+            O_CREATED[CREATED] --> O_DONE[PAYMENT_DONE]
         end
-        subgraph "Payment Status"
-            PAYMENT_DONE
+
+        subgraph "Payment Module"
+            P_DONE[PAYMENT_DONE]
         end
     end
+
+```
+### Order Cancel
+
+```mermaid
+flowchart LR
+    subgraph "Order Cancel"
+        subgraph "Order Module"
+            O_CREATED[CREATED] --> O_CANCELLED[ORDER_CANCELLED]
+        end
+    end
+
 ```
 
 ### Failed Payment
 
 ```mermaid
 flowchart LR
-    CREATED --> PAYMENT_FAILED
-
-    subgraph "Order Failed"
-        subgraph "Order Status"
-            CREATED
-            PAYMENT_FAILED
+    subgraph "Failed Payment"
+        subgraph "Order Module"
+            O_CREATED[CREATED] --> O_FAILED[PAYMENT_FAILED]
         end
-        subgraph "Payment Status"
-            PAYMENT_FAILED
+
+        subgraph "Payment Module"
+            P_FAILED[PAYMENT_FAILED]
         end
     end
+
 ```
 
 ### Retried Payment
 
 ```mermaid
 flowchart LR
-    CREATED --> PAYMENT_FAILED
-    PAYMENT_FAILED --> PAYMENT_DONE
-
-    subgraph "Order Retried"
-        subgraph "Order Status"
-            CREATED
-            PAYMENT_FAILED
-            PAYMENT_DONE
+    subgraph "Retried Payment"
+        subgraph "Order Module"
+            O_FAILED[PAYMENT_FAILED] --> O_DONE[PAYMENT_DONE]
         end
-        subgraph "Payment Status"
-            PAYMENT_FAILED
-            PAYMENT_DONE
+
+        subgraph "Payment Module"
+            P_FAILED[PAYMENT_FAILED] --> P_DONE[PAYMENT_DONE]
         end
     end
 ```
